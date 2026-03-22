@@ -1,0 +1,8 @@
+crawl4ai
+openai
+pydantic
+python-dotenv
+azure-identity
+azure-ai-projects>=2.0.0
+fastapi
+uvicorn[standard]
