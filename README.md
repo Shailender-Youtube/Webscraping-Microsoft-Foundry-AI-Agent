@@ -2,6 +2,9 @@
 
 An AI-powered web application that takes a company name and delivers a full structured sales brief in under 60 seconds. Built with **Crawl4AI**, **Microsoft Foundry**, and **FastAPI**.
 
+# Watch the Video for Step by Step Details
+
+[![Video Title](https://img.youtube.com/vi/Por1BprU85g/0.jpg)](https://www.youtube.com/watch?v=Por1BprU85g)
 ---
 
 ## How It Works
