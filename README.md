@@ -1,6 +1,6 @@
 # Sales Intelligence Pipeline
 
-An AI-powered web application that takes a company name and delivers a full structured sales brief in under 60 seconds. Built with **Crawl4AI**, **Azure AI Foundry**, and **FastAPI**.
+An AI-powered web application that takes a company name and delivers a full structured sales brief in under 60 seconds. Built with **Crawl4AI**, **Microsoft Foundry**, and **FastAPI**.
 
 ---
 
@@ -19,7 +19,7 @@ An AI-powered web application that takes a company name and delivers a full stru
 
 - Python 3.10 or higher
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed
-- An Azure AI Foundry project with:
+- An Microsoft Foundry project with:
   - A deployed GPT model
   - An Agent named `crawler-agent` (version `1`) with the `web_search` tool enabled
 
