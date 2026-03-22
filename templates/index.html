@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Intelligence Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand:        #4F46E5;
+      --brand-dark:   #3730A3;
+      --brand-light:  #EEF2FF;
+      --purple:       #7C3AED;
+      --bg:           #F1F5F9;
+      --white:        #FFFFFF;
+      --text:         #0F172A;
+      --text-muted:   #64748B;
+      --border:       #E2E8F0;
+      --green:        #059669;
+      --green-light:  #ECFDF5;
+      --azure:        #0078D4;
+      --azure-light:  #EFF6FF;
+      --red:          #DC2626;
+      --red-light:    #FEF2F2;
+      --shadow:       0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.06);
+      --shadow-lg:    0 8px 24px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.06);
+      --radius:       16px;
+      --radius-sm:    10px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ──────────── HEADER ──────────── */
+    header {
+      background: linear-gradient(135deg, #4338CA 0%, #6D28D9 100%);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 24px rgba(79,70,229,.35);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .hdr-icon { font-size: 26px; }
+    .hdr-title {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+    .hdr-sub {
+      color: rgba(255,255,255,.65);
+      font-size: 12.5px;
+      margin-top: 1px;
+    }
+    .hdr-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: .3px;
+    }
+
+    /* ──────────── LAYOUT ──────────── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 52px 24px 80px;
+    }
+
+    /* ──────────── SECTIONS / TRANSITIONS ──────────── */
+    .section { display: none; }
+    .section.active {
+      display: block;
+      animation: fadeUp .3s ease forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ──────────── SEARCH ──────────── */
+    .search-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .search-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 14px;
+    }
+    .search-heading {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-align: center;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+    .search-heading span {
+      background: linear-gradient(135deg, var(--brand), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .search-sub {
+      color: var(--text-muted);
+      font-size: 15px;
+      text-align: center;
+      margin-bottom: 40px;
+      max-width: 480px;
+    }
+    .search-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 36px 40px 32px;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 600px;
+    }
+    .search-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      letter-spacing: .3px;
+    }
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+    .search-row input {
+      flex: 1;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-family: inherit;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .2s, background .2s;
+    }
+    .search-row input:focus {
+      border-color: var(--brand);
+      background: var(--white);
+    }
+    .search-row input::placeholder { color: #94A3B8; }
+    .btn-primary {
+      padding: 14px 26px;
+      background: linear-gradient(135deg, var(--brand), var(--purple));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14.5px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 14px rgba(79,70,229,.4);
+    }
+    .btn-primary:hover { opacity: .92; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .search-hint {
+      margin-top: 14px;
+      color: #94A3B8;
+      font-size: 12.5px;
+      text-align: center;
+    }
+
+    /* ──────────── COMPANY SELECT ──────────── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      margin-bottom: 28px;
+      transition: all .2s;
+    }
+    .back-btn:hover { background: var(--white); color: var(--text); border-color: #CBD5E1; }
+    .select-heading {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin-bottom: 6px;
+    }
+    .select-sub {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+    .company-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 16px;
+    }
+    .company-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      cursor: pointer;
+      transition: all .22s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .company-card:hover {
+      border-color: var(--brand);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-3px);
+    }
+    .cc-icon {
+      width: 46px; height: 46px;
+      background: var(--brand-light);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .cc-name { font-weight: 700; font-size: 16px; }
+    .cc-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; flex: 1; }
+    .cc-url {
+      font-size: 12px; color: var(--brand); font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .btn-select {
+      margin-top: 6px;
+      width: 100%;
+      padding: 10px;
+      background: var(--brand-light);
+      color: var(--brand);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .company-card:hover .btn-select {
+      background: linear-gradient(135deg, var(--brand), var(--purple));
+      color: #fff;
+    }
+
+    /* ──────────── PROGRESS / LOADING ──────────── */
+    .loading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .loading-company {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--brand);
+      margin-bottom: 48px;
+    }
+    .progress-track {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 40px;
+    }
+    .prog-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .prog-step-circle {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      transition: all .35s;
+      box-shadow: var(--shadow);
+    }
+    .prog-step.active .prog-step-circle {
+      border-color: var(--brand);
+      background: var(--brand-light);
+      box-shadow: 0 0 0 6px rgba(79,70,229,.12);
+    }
+    .prog-step.done .prog-step-circle {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+    .prog-step-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color .3s;
+    }
+    .prog-step.active .prog-step-label { color: var(--brand); }
+    .prog-step.done  .prog-step-label { color: var(--green); }
+    .prog-connector {
+      width: 80px;
+      height: 2px;
+      background: var(--border);
+      margin-bottom: 30px;
+      transition: background .3s;
+    }
+    .prog-connector.done { background: var(--green); }
+    .loading-msg {
+      color: var(--text-muted);
+      font-size: 14px;
+      min-height: 22px;
+    }
+    /* CSS spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 26px; height: 26px;
+      border: 3px solid var(--brand-light);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+    }
+    .inline-spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 7px;
+    }
+
+    /* ──────────── BRIEF ──────────── */
+    .brief-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn-ghost {
+      background: var(--white);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: #CBD5E1; box-shadow: var(--shadow); }
+    .btn-download {
+      padding: 9px 22px;
+      background: linear-gradient(135deg, var(--brand), var(--purple));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity .2s;
+      box-shadow: 0 2px 10px rgba(79,70,229,.35);
+    }
+    .btn-download:hover { opacity: .9; }
+
+    /* Hero card */
+    .brief-hero {
+      background: linear-gradient(135deg, #4338CA 0%, #6D28D9 100%);
+      border-radius: 20px;
+      padding: 40px 44px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 32px rgba(79,70,229,.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .brief-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+    }
+    .brief-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 150px; height: 150px;
+      background: rgba(255,255,255,.04);
+      border-radius: 50%;
+    }
+    .brief-company-name {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -.8px;
+      color: #fff;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .brief-industry-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.28);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      position: relative;
+    }
+    .brief-what-they-do {
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: rgba(255,255,255,.88);
+      max-width: 680px;
+      position: relative;
+    }
+
+    /* Info grid */
+    .brief-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .brief-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .brief-grid-1 { grid-template-columns: 1fr; }
+
+    .bcard {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      box-shadow: var(--shadow);
+    }
+    .bcard-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .bcard-icon { font-size: 18px; }
+    .bcard-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-muted);
+    }
+
+    /* Bullet list */
+    .blist { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .blist li {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--text);
+      padding-left: 18px;
+      position: relative;
+    }
+    .blist li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--brand);
+    }
+
+    /* Tag cloud */
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 5px 13px;
+      border-radius: 20px;
+      transition: all .15s;
+    }
+    .tag:hover { background: var(--brand-light); border-color: var(--brand); color: var(--brand); }
+
+    /* Numbered list */
+    .nlist { display: flex; flex-direction: column; gap: 14px; }
+    .nitem { display: flex; gap: 14px; align-items: flex-start; }
+    .nnum {
+      min-width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .ntext { font-size: 14px; line-height: 1.65; padding-top: 5px; }
+
+    /* Talking points — green accent */
+    .bcard.talking .nnum { background: var(--green-light); color: var(--green); }
+    .bcard.talking .bcard-title { color: var(--green); }
+
+    /* Questions — brand accent */
+    .bcard.questions .nnum { background: var(--brand-light); color: var(--brand); }
+    .bcard.questions .bcard-title { color: var(--brand); }
+
+    /* Azure card */
+    .bcard.azure-card {
+      background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+      border: 1px solid #BFDBFE;
+    }
+    .bcard.azure-card .bcard-title { color: var(--azure); }
+    .bcard.azure-card .azure-text { font-size: 15px; line-height: 1.7; color: #1E40AF; }
+
+    /* ──────────── ERROR ──────────── */
+    .error-banner {
+      background: var(--red-light);
+      border: 1px solid #FECACA;
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .error-banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .error-banner-text { font-size: 14px; color: #991B1B; line-height: 1.5; }
+    .error-banner-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #991B1B;
+      cursor: pointer;
+      font-size: 18px;
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+
+    /* ──────────── RESPONSIVE ──────────── */
+    @media (max-width: 640px) {
+      header { padding: 16px 20px; }
+      .hdr-badge { display: none; }
+      main { padding: 32px 16px 60px; }
+      .search-card { padding: 28px 20px; }
+      .search-heading { font-size: 26px; }
+      .search-row { flex-direction: column; }
+      .btn-primary { width: 100%; text-align: center; }
+      .brief-hero { padding: 28px 24px; }
+      .brief-company-name { font-size: 24px; }
+      .brief-grid, .brief-grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-icon">🔍</div>
+  <div>
+    <div class="hdr-title">Sales Intelligence Pipeline</div>
+    <div class="hdr-sub">AI-powered company research for sales &amp; presales teams</div>
+  </div>
+  <div class="hdr-badge">⚡ Powered by Azure AI</div>
+</header>
+
+<main>
+
+  <!-- ── STEP 1: SEARCH ── -->
+  <div class="section active" id="section-search">
+    <div class="search-wrap">
+      <div class="search-eyebrow">Sales Intelligence</div>
+      <h1 class="search-heading">Research any company<br><span>in seconds</span></h1>
+      <p class="search-sub">Enter a company name and our AI agent will find their website and build a complete sales brief.</p>
+      <div class="search-card">
+        <label class="search-label" for="search-input">Which company are you looking for?</label>
+        <div class="search-row">
+          <input type="text" id="search-input" placeholder="e.g. NewMount, BHP, Salesforce, Rio Tinto…" autocomplete="off" />
+          <button class="btn-primary" id="btn-search" onclick="doSearch()">Search</button>
+        </div>
+        <p class="search-hint">Press Enter or click Search to begin</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: SELECT COMPANY ── -->
+  <div class="section" id="section-select">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <h2 class="select-heading">Select a company to proceed</h2>
+    <p class="select-sub" id="select-sub">Choose one to generate a full Sales Brief.</p>
+    <div id="error-area"></div>
+    <div class="company-grid" id="company-grid"></div>
+  </div>
+
+  <!-- ── STEP 3: LOADING ── -->
+  <div class="section" id="section-loading">
+    <div class="loading-wrap">
+      <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">Building Brief for</p>
+      <div class="loading-company" id="loading-company"></div>
+
+      <div class="progress-track">
+        <div class="prog-step" id="ps-crawl">
+          <div class="prog-step-circle" id="ps-crawl-icon">🌐</div>
+          <div class="prog-step-label">Crawling Website</div>
+        </div>
+        <div class="prog-connector" id="pc-1"></div>
+        <div class="prog-step" id="ps-extract">
+          <div class="prog-step-circle" id="ps-extract-icon">🤖</div>
+          <div class="prog-step-label">AI Analysis</div>
+        </div>
+      </div>
+
+      <p class="loading-msg" id="loading-msg">Initialising…</p>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: BRIEF ── -->
+  <div class="section" id="section-brief">
+    <div class="brief-toolbar">
+      <button class="btn-ghost" onclick="showSection('search'); document.getElementById('search-input').value=''">← New Search</button>
+      <button class="btn-download" onclick="downloadMd()">⬇ Download as Markdown</button>
+    </div>
+    <div id="brief-content"></div>
+  </div>
+
+</main>
+
+<script>
+  let currentBriefData = null;
+
+  /* ── helpers ── */
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goBack() {
+    document.getElementById('error-area').innerHTML = '';
+    showSection('search');
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── STEP 1: search ── */
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  async function doSearch() {
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) return;
+    const btn = document.getElementById('btn-search');
+    btn.innerHTML = '<span class="inline-spinner"></span>Searching…';
+    btn.disabled = true;
+    try {
+      const res  = await fetch('/api/search', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query}) });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      if (!data.options?.length) throw new Error('No companies found. Try a different name.');
+      renderOptions(query, data.options);
+      showSection('select');
+    } catch(e) {
+      alert('Search failed: ' + e.message);
+    } finally {
+      btn.innerHTML = 'Search';
+      btn.disabled = false;
+    }
+  }
+
+  /* ── STEP 2: company options ── */
+  const ICONS = ['🏢','🏭','🌍','🏗️'];
+
+  function renderOptions(query, options) {
+    document.getElementById('select-sub').textContent =
+      `Found ${options.length} result${options.length > 1 ? 's' : ''} for "${query}". Click one to generate a Sales Brief.`;
+    const grid = document.getElementById('company-grid');
+    grid.innerHTML = '';
+    options.forEach((opt, i) => {
+      const card = document.createElement('div');
+      card.className = 'company-card';
+      card.innerHTML = `
+        <div class="cc-icon">${ICONS[i] || '🏢'}</div>
+        <div class="cc-name">${esc(opt.name)}</div>
+        <div class="cc-desc">${esc(opt.description || '')}</div>
+        <div class="cc-url">${esc(opt.url)}</div>
+        <button class="btn-select">Generate Sales Brief →</button>
+      `;
+      card.addEventListener('click', () => startGeneration(opt.url, opt.name));
+      grid.appendChild(card);
+    });
+  }
+
+  /* ── STEP 3: SSE stream ── */
+  function startGeneration(url, name) {
+    showSection('loading');
+    document.getElementById('loading-company').textContent = name;
+    document.getElementById('loading-msg').textContent = 'Initialising…';
+    setProgStep('crawl', 'pending');
+    setProgStep('extract', 'pending');
+    document.getElementById('pc-1').classList.remove('done');
+
+    const evtSource = new EventSource(`/api/brief?url=${encodeURIComponent(url)}`);
+
+    evtSource.onmessage = e => {
+      const msg = JSON.parse(e.data);
+      document.getElementById('loading-msg').textContent = msg.message || '';
+
+      if (msg.type === 'progress') {
+        if (msg.step === 'crawl')      setProgStep('crawl', 'active');
+        if (msg.step === 'crawl_done') { setProgStep('crawl', 'done'); document.getElementById('pc-1').classList.add('done'); }
+        if (msg.step === 'extract')    { setProgStep('crawl', 'done'); setProgStep('extract', 'active'); document.getElementById('pc-1').classList.add('done'); }
+      }
+
+      if (msg.type === 'complete') {
+        evtSource.close();
+        setProgStep('crawl', 'done');
+        setProgStep('extract', 'done');
+        currentBriefData = msg.brief;
+        renderBrief(msg.brief);
+        showSection('brief');
+      }
+
+      if (msg.type === 'error') {
+        evtSource.close();
+        showSection('select');
+        showError(msg.message);
+      }
+    };
+
+    evtSource.onerror = () => {
+      evtSource.close();
+      showSection('select');
+      showError('Connection lost. Please try again.');
+    };
+  }
+
+  function setProgStep(step, state) {
+    const el   = document.getElementById('ps-' + step);
+    const icon = document.getElementById('ps-' + step + '-icon');
+    el.className = 'prog-step ' + state;
+    const def = { crawl: '🌐', extract: '🤖' };
+    if (state === 'active') { icon.innerHTML = '<div class="spinner"></div>'; }
+    else if (state === 'done') { icon.textContent = '✅'; }
+    else { icon.textContent = def[step]; }
+  }
+
+  /* ── STEP 4: render brief ── */
+  function renderBrief(b) {
+    const root = document.getElementById('brief-content');
+    root.innerHTML = '';
+
+    /* hero */
+    const hero = el('div', 'brief-hero');
+    hero.innerHTML = `
+      <div class="brief-company-name">${esc(b.company_name || 'Unknown Company')}</div>
+      ${b.industry ? `<div class="brief-industry-badge">${esc(b.industry)}</div>` : ''}
+      <div class="brief-what-they-do">${esc(b.what_they_do || '')}</div>`;
+    root.appendChild(hero);
+
+    /* row: size + industries served */
+    const r1 = [];
+    if (b.company_size_signals?.length) r1.push(listCard('🏗️', 'Company Size Signals', b.company_size_signals));
+    if (b.industries_served?.length)    r1.push(listCard('🌐', 'Industries Served', b.industries_served));
+    if (r1.length) root.appendChild(grid2(r1));
+
+    /* row: recent news + key people */
+    const r2 = [];
+    if (b.recent_news?.length)  r2.push(listCard('📰', 'Recent News', b.recent_news));
+    if (b.key_people?.length)   r2.push(listCard('👥', 'Key People', b.key_people));
+    if (r2.length) root.appendChild(grid2(r2));
+
+    /* tech stack */
+    if (b.tech_stack_mentions?.length) {
+      const c = bcard('💻', 'Tech Stack Mentions');
+      const tc = el('div', 'tag-cloud');
+      b.tech_stack_mentions.forEach(t => { const tg = el('div','tag'); tg.textContent = t; tc.appendChild(tg); });
+      c.appendChild(tc);
+      root.appendChild(grid1([c]));
+    }
+
+    /* spend + challenges */
+    const r3 = [];
+    if (b.spend_signals?.length)       r3.push(listCard('💰', 'Spend Signals', b.spend_signals));
+    if (b.current_challenges?.length)  r3.push(listCard('⚠️', 'Current Challenges', b.current_challenges));
+    if (r3.length) root.appendChild(grid2(r3));
+
+    /* talking points */
+    if (b.talking_points?.length) {
+      const c = bcard('💬', 'Talking Points for First Meeting', 'talking');
+      c.appendChild(numberedList(b.talking_points));
+      root.appendChild(grid1([c]));
+    }
+
+    /* questions */
+    if (b.open_questions?.length) {
+      const c = bcard('❓', 'Discovery Questions to Ask', 'questions');
+      c.appendChild(numberedList(b.open_questions));
+      root.appendChild(grid1([c]));
+    }
+
+    /* azure */
+    if (b.azure_relevance) {
+      const c = bcard('☁️', 'Azure Relevance', 'azure-card');
+      const p = el('p', 'azure-text');
+      p.textContent = b.azure_relevance;
+      c.appendChild(p);
+      root.appendChild(grid1([c]));
+    }
+  }
+
+  /* ── DOM helpers ── */
+  function el(tag, cls) {
+    const d = document.createElement(tag);
+    if (cls) d.className = cls;
+    return d;
+  }
+
+  function bcard(icon, title, extra = '') {
+    const c = el('div', 'bcard ' + extra);
+    const h = el('div', 'bcard-header');
+    h.innerHTML = `<span class="bcard-icon">${icon}</span><span class="bcard-title">${title}</span>`;
+    c.appendChild(h);
+    return c;
+  }
+
+  function listCard(icon, title, items) {
+    const c = bcard(icon, title);
+    const ul = el('ul', 'blist');
+    items.forEach(i => { const li = document.createElement('li'); li.textContent = i; ul.appendChild(li); });
+    c.appendChild(ul);
+    return c;
+  }
+
+  function numberedList(items) {
+    const w = el('div', 'nlist');
+    items.forEach((item, i) => {
+      const row = el('div', 'nitem');
+      row.innerHTML = `<div class="nnum">${i+1}</div><div class="ntext">${esc(item)}</div>`;
+      w.appendChild(row);
+    });
+    return w;
+  }
+
+  function grid2(children) {
+    const g = el('div', 'brief-grid');
+    if (children.length === 1) g.style.gridTemplateColumns = '1fr';
+    children.forEach(c => g.appendChild(c));
+    return g;
+  }
+
+  function grid1(children) {
+    const g = el('div', 'brief-grid brief-grid-1');
+    children.forEach(c => g.appendChild(c));
+    return g;
+  }
+
+  /* ── error banner ── */
+  function showError(message) {
+    const area = document.getElementById('error-area');
+    const b = el('div', 'error-banner');
+    b.innerHTML = `
+      <span class="error-banner-icon">⚠️</span>
+      <span class="error-banner-text">${esc(message)}</span>
+      <button class="error-banner-close" onclick="this.parentElement.remove()">✕</button>`;
+    area.prepend(b);
+  }
+
+  /* ── download markdown ── */
+  function downloadMd() {
+    if (!currentBriefData) return;
+    const b = currentBriefData;
+    const lines = [];
+    const add  = t  => lines.push(t);
+    const list = arr => { arr.forEach(i => add(`- ${i}`)); add(''); };
+    const num  = arr => { arr.forEach((i,n) => add(`${n+1}. ${i}`)); add(''); };
+
+    add(`# Sales Intelligence Brief: ${b.company_name || 'Unknown'}\n`);
+    add(`## What They Do\n${b.what_they_do || ''}\n`);
+    add(`## Industry\n${b.industry || ''}\n`);
+    if (b.company_size_signals?.length)  { add('## Company Size Signals');         list(b.company_size_signals); }
+    if (b.industries_served?.length)     { add('## Industries Served');             list(b.industries_served); }
+    if (b.recent_news?.length)           { add('## Recent News');                   list(b.recent_news); }
+    if (b.key_people?.length)            { add('## Key People');                    list(b.key_people); }
+    if (b.tech_stack_mentions?.length)   { add('## Tech Stack Mentions');           list(b.tech_stack_mentions); }
+    if (b.spend_signals?.length)         { add('## Spend Signals');                 list(b.spend_signals); }
+    if (b.current_challenges?.length)    { add('## Current Challenges');            list(b.current_challenges); }
+    if (b.talking_points?.length)        { add('## Talking Points for First Meeting'); num(b.talking_points); }
+    if (b.open_questions?.length)        { add('## Discovery Questions');           num(b.open_questions); }
+    if (b.azure_relevance)               { add(`## Azure Relevance\n${b.azure_relevance}\n`); }
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${(b.company_name || 'brief').toLowerCase().replace(/\s+/g,'_')}_sales_brief.md`;
+    a.click();
+  }
+</script>
+</body>
+</html>
